@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="style.css">
+<style>
+  .steps { position: absolute; left: 72px; top: 292px; width: 380px; color: #fff; }
+  .step { display: flex; gap: 16px; margin-bottom: 30px; }
+  .step b { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--coral); display: grid; place-items: center; font-size: 16px; }
+  .step h3 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .step p { font-size: 15px; line-height: 1.5; color: #c7d3ff; }
+</style>
+<div class="headline">
+  <h1>Connect any MCP agent in three steps.</h1>
+  <p>Works with Codex, Claude Code, Gemini CLI, Cursor, OpenCode, Copilot CLI and other MCP clients on macOS and Linux.</p>
+</div>
+<div class="steps">
+  <div class="step"><b>1</b><div><h3>Install the local bridge</h3><p>Registers the helper Chrome uses to reach your agents.</p></div></div>
+  <div class="step"><b>2</b><div><h3>Add the extension</h3><p>Load it in Chrome. It opens the background tabs and tab groups.</p></div></div>
+  <div class="step"><b>3</b><div><h3>Add the MCP server</h3><p>Your agent gets tab, page and input tools.</p></div></div>
+</div>
+<div class="panel" style="left:500px; top:276px; width:708px;">
+  <header><span class="dot"></span>Terminal</header>
+  <pre><span class="c">$</span> <span class="k">npx @csltd/agent-computer-use install</span>
+<span class="ok">Registered the native host for Google Chrome</span>
+
+<span class="c">$</span> <span class="k">claude mcp add -s user agent-computer-use \
+    -- npx -y @csltd/agent-computer-use mcp</span>
+<span class="ok">Added stdio MCP server agent-computer-use</span>
+
+<span class="c">$</span> <span class="k">npx @csltd/agent-computer-use doctor</span>
+<span class="ok">ok</span>   native host registered for 1 browser(s)
+<span class="ok">ok</span>   host launcher at ~/.agent-computer-use/native-host.sh
+<span class="ok">ok</span>   extension 0.1.0 answered through ~/.agent-computer-use/broker.sock
+<span class="ok">ok</span>   extension and package are both version 0.1.0</pre>
+</div>

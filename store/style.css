@@ -1,0 +1,171 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=block");
+
+:root {
+  --navy: #0a1a3f;
+  --navy-2: #12285e;
+  --blue: #3a63ff;
+  --coral: #ff6b3d;
+  --ink: #1f2328;
+  --muted: #59636e;
+  --line: #d8dee4;
+  --chrome: #dfe3eb;
+  --chrome-2: #edf0f5;
+  --group-blue: #1a73e8;
+  --group-orange: #e8710a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 1280px;
+  height: 800px;
+  overflow: hidden;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--ink);
+  background: radial-gradient(120% 120% at 85% 0%, #2c4fe0 0%, var(--navy-2) 38%, var(--navy) 100%);
+}
+
+.headline {
+  position: absolute;
+  left: 72px;
+  top: 52px;
+  right: 72px;
+  color: #fff;
+}
+.headline h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; }
+.headline p { margin-top: 12px; font-size: 19px; color: #c7d3ff; max-width: 860px; line-height: 1.45; }
+
+/* Browser window */
+.window {
+  position: absolute;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(3, 10, 35, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.tabstrip {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 46px;
+  padding: 0 12px;
+  background: var(--chrome);
+}
+.lights { display: flex; gap: 8px; align-self: center; margin-right: 14px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.lights i:nth-child(2) { background: #febc2e; }
+.lights i:nth-child(3) { background: #28c840; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 186px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #3c4043;
+  border-radius: 10px 10px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.tab.active { background: #fff; color: #202124; }
+.tab.grouped { position: relative; }
+.tab.grouped::after { content: ""; position: absolute; left: 6px; right: 6px; bottom: 0; height: 3px; border-radius: 2px; }
+.tab.grouped.blue::after { background: var(--group-blue); }
+.tab.grouped.orange::after { background: var(--group-orange); }
+.fav { flex: none; width: 16px; height: 16px; border-radius: 4px; background: #9aa0a6; }
+.fav.docs { background: #4285f4; }
+.fav.mail { background: #ea4335; }
+.fav.acme { background: #0f9d58; }
+.fav.globex { background: #8e24aa; }
+.fav.local { background: #f4b400; }
+.group-label {
+  align-self: center;
+  margin: 0 4px 2px 8px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+.group-label.blue { background: var(--group-blue); }
+.group-label.orange { background: var(--group-orange); }
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 46px;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.nav { display: flex; gap: 14px; color: #5f6368; font-size: 16px; }
+.omnibox {
+  flex: 1;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: var(--chrome-2);
+  font-size: 14px;
+  color: #3c4043;
+}
+.toolbar-icon { width: 22px; height: 22px; }
+.infobar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13.5px;
+  color: #3c4043;
+  background: #f1f3f4;
+  border-bottom: 1px solid var(--line);
+}
+.infobar .cancel { margin-left: auto; color: var(--group-blue); font-weight: 600; }
+
+/* Agent panel */
+.panel {
+  position: absolute;
+  border-radius: 14px;
+  background: #0d1430;
+  color: #dbe4ff;
+  box-shadow: 0 24px 60px rgba(3, 10, 35, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.panel header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+.panel header .dot { width: 8px; height: 8px; border-radius: 50%; background: #3ddc97; }
+.panel pre {
+  padding: 16px 18px 18px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.k { color: #ff9a76; font-weight: 600; }
+.s { color: #9fb6ff; }
+.c { color: #7d8bb8; }
+.ok { color: #3ddc97; }
+.ref { color: #ffd27a; font-weight: 600; }
+
+.chips { position: absolute; display: flex; gap: 10px; }
+.chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}

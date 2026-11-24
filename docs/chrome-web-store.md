@@ -5,6 +5,7 @@ Answers for the Chrome Web Store developer dashboard. Build the upload with `npm
 ## Listing
 
 - **Name:** Agent Computer Use
+- **Publisher:** Custom Services Limited
 - **Summary:** Lets local coding agents work in background tabs of your Chrome, grouped per task, without remote debugging.
 - **Category:** Developer Tools
 - **Homepage and support:** https://github.com/konstantinosbotonakis/agent-computer-use
@@ -33,16 +34,18 @@ Select **Website content** and **Web history**, because the extension reads page
 
 ## Images
 
+All images are in `store/images` and are rendered from the HTML in `store/` with `node scripts/render-store-images.mjs`.
+
 - **Icon:** `extension/icons/icon-128.png` is part of the package. Its artwork is 96×96 with 16 pixels of transparent padding on each side.
-- **Screenshots:** at least one 1280×800 or 640×400 image is required. Show a tab group of agent tabs next to the user's own tabs, and the extension popup.
-- **Small promotional tile (440×280):** optional, but listings without one are shown after listings that have one.
+- **Screenshots (1280×800):** `screenshot-1-tab-groups.png`, `screenshot-2-page-outline.png`, `screenshot-3-control.png` and `screenshot-4-setup.png`. The pages, sites and data shown are made-up examples.
+- **Small promotional tile (440×280):** `promo-small.png`.
 
 ## After the first upload
 
 The store assigns its own extension ID. Register it with the native host on each machine:
 
 ```sh
-node bin/agent-computer-use.mjs install --extension-id <store extension id>
+npx @csltd/agent-computer-use install --extension-id <store extension id>
 ```
 
 To keep the unpacked development build on the same ID, copy the public key from the dashboard's **Package** tab into the `key` field of `extension/manifest.json` and update `EXTENSION_ID` in `src/paths.mjs`.

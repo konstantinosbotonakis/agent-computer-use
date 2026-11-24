@@ -4,12 +4,22 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { BROKER_SOCKET, EXTENSION_ID, HOST_LAUNCHER, NATIVE_HOST_NAME, STATE_DIR } from "../src/paths.mjs";
+import {
+  BROKER_SOCKET,
+  EXTENSION_ID,
+  HOST_LAUNCHER,
+  INSTALLED_EXTENSION_DIR,
+  INSTALLED_HOST_DIR,
+  NATIVE_HOST_NAME,
+  STATE_DIR,
+} from "../src/paths.mjs";
 
 const PROJECT_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const EXTENSION_DIR = path.join(PROJECT_DIR, "extension");
-const NATIVE_HOST_SCRIPT = path.join(PROJECT_DIR, "src", "native-host.mjs");
+const HOST_FILES = ["native-host.mjs", "native-messaging.mjs", "paths.mjs"];
 const CLI_SCRIPT = fileURLToPath(import.meta.url);
+const PACKAGE = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, "package.json"), "utf8"));
+const RUNS_FROM_NPM = PROJECT_DIR.split(path.sep).includes("node_modules");
 
 // Folders where Chromium-based browsers look for native messaging host manifests.
 function nativeHostDirectories() {
@@ -50,8 +60,17 @@ function install(extraIds) {
     throw new Error("Agent Computer Use supports macOS and Linux.");
   }
   fs.mkdirSync(STATE_DIR, { recursive: true, mode: 0o700 });
+
+  // The host only uses Node built-ins, so a copy of its three files runs anywhere.
+  fs.rmSync(INSTALLED_HOST_DIR, { recursive: true, force: true });
+  fs.mkdirSync(INSTALLED_HOST_DIR, { recursive: true });
+  for (const file of HOST_FILES) fs.copyFileSync(path.join(PROJECT_DIR, "src", file), path.join(INSTALLED_HOST_DIR, file));
+  fs.rmSync(INSTALLED_EXTENSION_DIR, { recursive: true, force: true });
+  fs.cpSync(EXTENSION_DIR, INSTALLED_EXTENSION_DIR, { recursive: true, filter: (source) => !source.endsWith(".DS_Store") });
+
   // Chrome starts native hosts with a minimal environment, so the launcher names node by its full path.
-  fs.writeFileSync(HOST_LAUNCHER, `#!/bin/sh\nexec "${process.execPath}" "${NATIVE_HOST_SCRIPT}"\n`, { mode: 0o755 });
+  const hostScript = path.join(INSTALLED_HOST_DIR, "native-host.mjs");
+  fs.writeFileSync(HOST_LAUNCHER, `#!/bin/sh\nexec "${process.execPath}" "${hostScript}"\n`, { mode: 0o755 });
   const directories = nativeHostDirectories();
   if (directories.length === 0) throw new Error("No Chrome, Chromium, Brave or Edge profile folder was found.");
   for (const directory of directories) {
@@ -67,16 +86,17 @@ function install(extraIds) {
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
     console.log(`Registered the native host for ${path.dirname(directory)}`);
   }
+  const mcpCommand = RUNS_FROM_NPM
+    ? `command: npx\n   args:    ["-y", "${PACKAGE.name}", "mcp"]`
+    : `command: ${process.execPath}\n   args:    ["${CLI_SCRIPT}", "mcp"]`;
   console.log(`
 Next steps:
-1. Install the extension from the Chrome Web Store, or open chrome://extensions, turn on
-   Developer mode, click "Load unpacked" and choose:
-   ${EXTENSION_DIR}
+1. Open chrome://extensions, turn on Developer mode, click "Load unpacked" and choose:
+   ${INSTALLED_EXTENSION_DIR}
    (If the extension was already loaded, click its reload button instead.)
 2. Add this MCP server to your agent:
-   command: ${process.execPath}
-   args:    ["${CLI_SCRIPT}", "mcp"]
-3. Run: agent-computer-use doctor`);
+   ${mcpCommand}
+3. Check the setup: ${RUNS_FROM_NPM ? `npx ${PACKAGE.name} doctor` : `node ${CLI_SCRIPT} doctor`}`);
 }
 
 function uninstall() {
@@ -84,6 +104,8 @@ function uninstall() {
     fs.rmSync(path.join(directory, `${NATIVE_HOST_NAME}.json`), { force: true });
   }
   fs.rmSync(HOST_LAUNCHER, { force: true });
+  fs.rmSync(INSTALLED_HOST_DIR, { recursive: true, force: true });
+  fs.rmSync(INSTALLED_EXTENSION_DIR, { recursive: true, force: true });
   console.log("Removed the native host registration. Remove the extension at chrome://extensions.");
 }
 
@@ -122,6 +144,12 @@ async function doctor() {
   try {
     const { version } = await ping();
     report(true, `extension ${version} answered through ${BROKER_SOCKET}`);
+    report(
+      version === PACKAGE.version,
+      version === PACKAGE.version
+        ? `extension and package are both version ${version}`
+        : `extension ${version} differs from package ${PACKAGE.version}: run install again, then reload the extension`,
+    );
   } catch (error) {
     report(false, `extension not reachable (${error.code ?? error.message}). Check that Chrome is running and the extension is loaded and enabled.`);
   }

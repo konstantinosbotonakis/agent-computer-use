@@ -7,7 +7,7 @@ async function render() {
   const status = await chrome.runtime.sendMessage({ type: "status" });
   hostLine.textContent = status.hostConnected
     ? "Connected to the local agent bridge."
-    : "Not connected to the local agent bridge. Run: agent-computer-use install";
+    : "Not connected to the local agent bridge. Run: npx @csltd/agent-computer-use install";
   hostLine.className = status.hostConnected ? "" : "status-off";
 
   summaryLine.textContent = status.controlledTabs.length

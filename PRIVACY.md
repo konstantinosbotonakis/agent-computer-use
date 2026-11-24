@@ -1,6 +1,6 @@
 # Privacy policy
 
-Agent Computer Use is a Chrome extension plus a small program that runs on your own computer. This policy covers both.
+Agent Computer Use is a Chrome extension plus a small program that runs on your own computer, published by Custom Services Limited. This policy covers both.
 
 ## What the extension handles
 
@@ -18,7 +18,7 @@ What a coding agent does with the data after that is governed by that agent and 
 
 ## What is not collected
 
-The developer collects nothing. The extension and the local program contain no analytics, telemetry, advertising or remote servers, and they store no data beyond what Chrome keeps while a tab is open.
+Custom Services Limited collects nothing. The extension and the local program contain no analytics, telemetry, advertising or remote servers, and they store no data beyond what Chrome keeps while a tab is open.
 
 ## Limited use
 

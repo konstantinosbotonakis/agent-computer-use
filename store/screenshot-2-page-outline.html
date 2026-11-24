@@ -1,0 +1,61 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="style.css">
+<style>
+  .pricing { padding: 30px 36px; background: #f7f8fb; height: 100%; }
+  .pricing h2 { font-size: 24px; font-weight: 800; text-align: center; }
+  .toggle { display: flex; justify-content: center; gap: 0; margin: 16px auto 22px; width: 270px; padding: 4px; border-radius: 999px; background: #e7eaf2; font-size: 13px; font-weight: 600; }
+  .toggle span { flex: 1; text-align: center; padding: 7px 0; border-radius: 999px; color: #59636e; }
+  .toggle .on { background: #fff; color: #1f2328; box-shadow: 0 1px 3px rgba(0,0,0,.12); outline: 2px solid var(--coral); outline-offset: 2px; }
+  .plans { display: flex; gap: 14px; }
+  .plan { flex: 1; padding: 18px; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .plan h3 { font-size: 15px; font-weight: 700; }
+  .plan .price { font-size: 26px; font-weight: 800; margin: 8px 0 12px; }
+  .plan .price small { font-size: 13px; color: #59636e; font-weight: 500; }
+  .plan .btn { padding: 8px 0; text-align: center; border-radius: 8px; background: #0f9d58; color: #fff; font-size: 13px; font-weight: 700; }
+  .note { margin-top: 22px; text-align: center; font-size: 13px; color: #59636e; }
+  .pointer { position: absolute; left: 430px; top: 192px; width: 26px; }
+</style>
+<div class="headline">
+  <h1>Pages as a clear outline. Actions by reference.</h1>
+  <p>Agents read each page as headings, text and controls with stable references, then click, type and choose options without guessing coordinates.</p>
+</div>
+<div class="window" style="left:72px; top:200px; width:620px; height:560px;">
+  <div class="tabstrip">
+      <div class="lights"><i></i><i></i><i></i></div>
+      <div class="tab"><span class="fav docs"></span>Q3 planning – Docs</div>
+      
+      <div class="group-label blue">🔎 Compare pricing</div>
+      <div class="tab grouped blue active"><span class="fav acme"></span>Pricing – Acme</div>
+      <div class="tab grouped blue"><span class="fav globex"></span>Plans – Globex</div>
+      
+    </div>
+  <div class="toolbar"><div class="nav">← → ↻</div><div class="omnibox">acme.example/pricing</div></div>
+  <div class="pricing">
+    <h2>Simple, predictable pricing</h2>
+    <div class="toggle"><span>Monthly</span><span class="on">Annual · save 20%</span></div>
+    <div class="plans">
+      <div class="plan"><h3>Starter</h3><div class="price">$8<small> / seat</small></div><div class="btn">Choose Starter</div></div>
+      <div class="plan"><h3>Team</h3><div class="price">$16<small> / seat</small></div><div class="btn">Choose Team</div></div>
+      <div class="plan"><h3>Business</h3><div class="price">$29<small> / seat</small></div><div class="btn">Choose Business</div></div>
+    </div>
+    <p class="note">Every plan includes single sign-on, audit logs and email support.</p>
+  </div>
+  <svg class="pointer" viewBox="0 0 24 24"><path d="M3 2l17 9.5-7.2 1.6L9.4 20z" fill="#ff6b3d" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+</div>
+<div class="panel" style="left:722px; top:200px; width:486px; height:560px;">
+  <header><span class="dot"></span>snapshot · tab 2106172656</header>
+  <pre><span class="c">Page: Pricing – Acme
+URL: https://acme.example/pricing</span>
+
+- heading <span class="s">"Simple, predictable pricing"</span> [level=1]
+- radio <span class="s">"Monthly"</span> [checked] [<span class="ref">ref=e11</span>]
+- radio <span class="s">"Annual · save 20%"</span> [<span class="ref">ref=e12</span>]
+- heading <span class="s">"Starter"</span> [level=3]
+- text: $8 / seat
+- button <span class="s">"Choose Starter"</span> [<span class="ref">ref=e13</span>]
+- heading <span class="s">"Team"</span> [level=3]
+- text: $16 / seat
+- button <span class="s">"Choose Team"</span> [<span class="ref">ref=e14</span>]
+
+<span class="k">click</span> <span class="ref">e12</span>  <span class="ok">✓ Clicked e12</span>
+<span class="k">wait_for</span> <span class="s">"$16 / seat"</span>  <span class="ok">✓ on the page</span></pre>
+</div>

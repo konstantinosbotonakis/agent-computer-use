@@ -1,0 +1,40 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="style.css">
+<style>
+  .doc { padding: 34px 56px; }
+  .doc h2 { font-size: 26px; font-weight: 700; margin-bottom: 18px; }
+  .doc p { font-size: 15px; line-height: 1.7; color: #3c4043; margin-bottom: 12px; max-width: 560px; }
+  .doc .list { margin: 4px 0 16px 20px; font-size: 15px; line-height: 1.9; color: #3c4043; max-width: 520px; }
+  .doc .caret { display: inline-block; width: 2px; height: 18px; background: #1a73e8; vertical-align: -3px; margin-left: 2px; }
+</style>
+<div class="headline">
+  <h1>Your agents work in their own tab groups.<br>You keep working in yours.</h1>
+  <p>Coding agents open background tabs in your real Chrome, one group per task. Your pointer, focus and current tab stay yours.</p>
+</div>
+<div class="window" style="left:72px; top:222px; width:1136px; height:540px;">
+  <div class="tabstrip">
+      <div class="lights"><i></i><i></i><i></i></div>
+      <div class="tab active"><span class="fav docs"></span>Q3 planning – Docs</div>
+      <div class="tab"><span class="fav mail"></span>Inbox (3)</div>
+      <div class="group-label blue">🔎 Compare pricing</div>
+      <div class="tab grouped blue"><span class="fav acme"></span>Pricing – Acme</div>
+      <div class="tab grouped blue"><span class="fav globex"></span>Plans – Globex</div>
+      <div class="group-label orange">🧪 Test checkout</div>
+      <div class="tab grouped orange"><span class="fav local"></span>Checkout – localhost</div>
+    </div>
+  <div class="toolbar"><div class="nav">← → ↻</div><div class="omnibox">docs.example.com/q3-planning</div><img class="toolbar-icon" src="../extension/icons/icon-32.png"></div>
+  <div class="doc">
+    <h2>Q3 planning</h2>
+    <p>Goals for the quarter: ship the new onboarding flow, cut checkout drop-off by a third and move billing to annual plans.</p>
+    <p>Open questions: which competitors already offer annual discounts, and what they charge for extra seats.</p>
+    <ul class="list"><li>Onboarding: three steps instead of seven</li><li>Checkout: guest payment and saved cards</li><li>Billing: annual plans with a 20% discount</li></ul>
+    <p>Owner for each item by Friday<span class="caret"></span></p>
+  </div>
+</div>
+<div class="panel" style="left:676px; top:448px; width:500px;">
+  <header><span class="dot"></span>Your coding agent</header>
+  <pre><span class="k">tab_open</span>  <span class="s">acme.example/pricing</span>
+          <span class="c">group "🔎 Compare pricing"</span>
+<span class="k">tab_open</span>  <span class="s">globex.example/plans</span>
+<span class="k">snapshot</span>  <span class="ok">✓ 38 elements</span>
+<span class="k">click</span>     <span class="ref">e12</span> <span class="c">"Annual · save 20%"</span></pre>
+</div>
