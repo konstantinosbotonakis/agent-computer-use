@@ -1,0 +1,32 @@
+{
+  "name": "agent-computer-use",
+  "version": "0.1.0",
+  "description": "Let local coding agents use your real Chrome in background tab groups, through a Chrome extension instead of remote debugging.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Konstantinos Botonakis",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/konstantinosbotonakis/agent-computer-use.git"
+  },
+  "bin": {
+    "agent-computer-use": "bin/agent-computer-use.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "extension",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^3.25.76"
+  }
+}

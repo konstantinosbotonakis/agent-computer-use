@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Agent Computer Use",
+  "version": "0.1.0",
+  "description": "Lets local coding agents work in background tabs of your Chrome, grouped per task, without remote debugging.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoIFJBIsPNzwbMhdG7vJoqENR3fVeaK6WIVc1E5oOlDS8aojNhxQndV0YxOzXIZFsiV7jLmmrAEu9QYTeP/Te4Vxrh4oS30dBSInShxRSq1TVSWkT4TUzTRFMJiTzNjnMoAZFtYaWKrVPIPSq44EACefaX/ojCJ3BVyXsF7Raa1R7aeRs8zUY7ykutJFuld+kWpRO1vlkCbq1uMQBQmro7FXqPD3XjcsS1tEC/kn2Nbk78fyWo/3ZPJSgqvVACZVVYzgdmQZpuGkkuivF4ijv516/PyUejxnkTnhDPWNSsLux3B7ixVwAQ/4oi2LETnGPCECixlwyb0h/+ZfDYjnVrwIDAQAB",
+  "minimum_chrome_version": "116",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "debugger",
+    "nativeMessaging",
+    "tabGroups",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Agent Computer Use",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_popup": "popup.html"
+  }
+}
