@@ -16,14 +16,17 @@
     "bin",
     "src",
     "extension",
+    "scripts",
     "README.md",
+    "PRIVACY.md",
     "LICENSE"
   ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "package:store": "node scripts/package-store.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",

@@ -42,11 +42,13 @@ node bin/agent-computer-use.mjs install
 
 `install` registers the native host for every Chromium-based browser it finds and prints the exact MCP command for your machine.
 
-Then load the extension:
+Then load the extension. Until it is listed on the Chrome Web Store, load it unpacked:
 
 1. Open `chrome://extensions` and turn on **Developer mode**.
 2. Click **Load unpacked** and choose the `extension` folder of this repository.
 3. Run `node bin/agent-computer-use.mjs doctor`. All three checks should say `ok`.
+
+The extension cannot work on its own. Chrome only lets an extension talk to programs on your computer through a native messaging host, so the local part (Node.js, this repository and the `install` step) is always needed. A Chrome Web Store install has a different extension ID; register it with `node bin/agent-computer-use.mjs install --extension-id <id>`.
 
 ## Add it to your agent
 
@@ -113,6 +115,10 @@ Snapshots and element lookups run in an isolated script world, so the page's own
 - Agents can read and change everything in the tabs they control, including signed-in sessions. Keep that in mind before you point an agent at an account.
 - The extension's popup lists the tabs agents control and has a button to release them all.
 
+## Privacy
+
+Nothing is sent to the developer or any server. The extension passes page content and tab details only to the local program, which passes them to the agents you connect. See [PRIVACY.md](PRIVACY.md).
+
 ## Limitations
 
 - Snapshots cover the main page and same-origin iframes. Cross-origin iframes are listed but not expanded.
@@ -135,6 +141,8 @@ npm test
 ```
 
 After changing files in `extension/`, click the extension's reload button at `chrome://extensions`. The MCP server and native host pick up changes the next time they start.
+
+`npm run package:store` builds the Chrome Web Store upload in `dist/`. [docs/chrome-web-store.md](docs/chrome-web-store.md) has the listing text, permission justifications and data disclosures.
 
 ## License
 

@@ -31,30 +31,46 @@ function nativeHostDirectories() {
     .map((directory) => path.join(directory, "NativeMessagingHosts"));
 }
 
-function install() {
+// The unpacked extension always has EXTENSION_ID. A Chrome Web Store install has the ID the
+// store assigned, passed with --extension-id. IDs allowed by an earlier install are kept.
+function allowedOrigins(manifestPath, extraIds) {
+  const origins = new Set([`chrome-extension://${EXTENSION_ID}/`]);
+  if (fs.existsSync(manifestPath)) {
+    for (const origin of JSON.parse(fs.readFileSync(manifestPath, "utf8")).allowed_origins ?? []) origins.add(origin);
+  }
+  for (const id of extraIds) {
+    if (!/^[a-p]{32}$/.test(id)) throw new Error(`"${id}" is not a Chrome extension ID.`);
+    origins.add(`chrome-extension://${id}/`);
+  }
+  return [...origins];
+}
+
+function install(extraIds) {
   if (process.platform !== "darwin" && process.platform !== "linux") {
     throw new Error("Agent Computer Use supports macOS and Linux.");
   }
   fs.mkdirSync(STATE_DIR, { recursive: true, mode: 0o700 });
   // Chrome starts native hosts with a minimal environment, so the launcher names node by its full path.
   fs.writeFileSync(HOST_LAUNCHER, `#!/bin/sh\nexec "${process.execPath}" "${NATIVE_HOST_SCRIPT}"\n`, { mode: 0o755 });
-  const manifest = {
-    name: NATIVE_HOST_NAME,
-    description: "Agent Computer Use bridge between local coding agents and the browser extension",
-    path: HOST_LAUNCHER,
-    type: "stdio",
-    allowed_origins: [`chrome-extension://${EXTENSION_ID}/`],
-  };
   const directories = nativeHostDirectories();
   if (directories.length === 0) throw new Error("No Chrome, Chromium, Brave or Edge profile folder was found.");
   for (const directory of directories) {
+    const manifestPath = path.join(directory, `${NATIVE_HOST_NAME}.json`);
+    const manifest = {
+      name: NATIVE_HOST_NAME,
+      description: "Agent Computer Use bridge between local coding agents and the browser extension",
+      path: HOST_LAUNCHER,
+      type: "stdio",
+      allowed_origins: allowedOrigins(manifestPath, extraIds),
+    };
     fs.mkdirSync(directory, { recursive: true });
-    fs.writeFileSync(path.join(directory, `${NATIVE_HOST_NAME}.json`), JSON.stringify(manifest, null, 2) + "\n");
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
     console.log(`Registered the native host for ${path.dirname(directory)}`);
   }
   console.log(`
 Next steps:
-1. Open chrome://extensions, turn on Developer mode, click "Load unpacked" and choose:
+1. Install the extension from the Chrome Web Store, or open chrome://extensions, turn on
+   Developer mode, click "Load unpacked" and choose:
    ${EXTENSION_DIR}
    (If the extension was already loaded, click its reload button instead.)
 2. Add this MCP server to your agent:
@@ -112,9 +128,12 @@ async function doctor() {
   process.exitCode = healthy ? 0 : 1;
 }
 
-const command = process.argv[2] ?? "help";
-if (command === "install") install();
+const [command = "help", ...options] = process.argv.slice(2);
+if (command === "install") {
+  const extraIds = options.flatMap((option, index) => (option === "--extension-id" ? [options[index + 1]] : []));
+  install(extraIds);
+}
 else if (command === "uninstall") uninstall();
 else if (command === "doctor") await doctor();
 else if (command === "mcp") await (await import("../src/mcp-server.mjs")).startMcpServer();
-else console.log("Usage: agent-computer-use <install | uninstall | doctor | mcp>");
+else console.log("Usage: agent-computer-use <install [--extension-id <id>] | uninstall | doctor | mcp>");

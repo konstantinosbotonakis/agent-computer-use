@@ -3,6 +3,7 @@
   "name": "Agent Computer Use",
   "version": "0.1.0",
   "description": "Lets local coding agents work in background tabs of your Chrome, grouped per task, without remote debugging.",
+  "homepage_url": "https://github.com/konstantinosbotonakis/agent-computer-use",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoIFJBIsPNzwbMhdG7vJoqENR3fVeaK6WIVc1E5oOlDS8aojNhxQndV0YxOzXIZFsiV7jLmmrAEu9QYTeP/Te4Vxrh4oS30dBSInShxRSq1TVSWkT4TUzTRFMJiTzNjnMoAZFtYaWKrVPIPSq44EACefaX/ojCJ3BVyXsF7Raa1R7aeRs8zUY7ykutJFuld+kWpRO1vlkCbq1uMQBQmro7FXqPD3XjcsS1tEC/kn2Nbk78fyWo/3ZPJSgqvVACZVVYzgdmQZpuGkkuivF4ijv516/PyUejxnkTnhDPWNSsLux3B7ixVwAQ/4oi2LETnGPCECixlwyb0h/+ZfDYjnVrwIDAQAB",
   "minimum_chrome_version": "116",
   "icons": {
