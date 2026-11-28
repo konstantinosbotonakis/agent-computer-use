@@ -4,6 +4,7 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { Desktop, ensureHelper } from "../src/desktop.mjs";
 import {
   BROKER_SOCKET,
   EXTENSION_ID,
@@ -55,7 +56,7 @@ function allowedOrigins(manifestPath, extraIds) {
   return [...origins];
 }
 
-function install(extraIds) {
+async function install(extraIds) {
   if (process.platform !== "darwin" && process.platform !== "linux") {
     throw new Error("Agent Computer Use supports macOS and Linux.");
   }
@@ -86,6 +87,14 @@ function install(extraIds) {
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
     console.log(`Registered the native host for ${path.dirname(directory)}`);
   }
+  if (process.platform === "darwin") {
+    try {
+      await ensureHelper();
+      console.log("Built the macOS desktop helper");
+    } catch (error) {
+      console.log(`Skipped the macOS desktop tools: ${error.message}`);
+    }
+  }
   const mcpCommand = RUNS_FROM_NPM
     ? `command: npx\n   args:    ["-y", "${PACKAGE.name}", "mcp"]`
     : `command: ${process.execPath}\n   args:    ["${CLI_SCRIPT}", "mcp"]`;
@@ -106,6 +115,7 @@ function uninstall() {
   fs.rmSync(HOST_LAUNCHER, { force: true });
   fs.rmSync(INSTALLED_HOST_DIR, { recursive: true, force: true });
   fs.rmSync(INSTALLED_EXTENSION_DIR, { recursive: true, force: true });
+  fs.rmSync(path.join(STATE_DIR, "desktop"), { recursive: true, force: true });
   console.log("Removed the native host registration. Remove the extension at chrome://extensions.");
 }
 
@@ -153,13 +163,23 @@ async function doctor() {
   } catch (error) {
     report(false, `extension not reachable (${error.code ?? error.message}). Check that Chrome is running and the extension is loaded and enabled.`);
   }
+  if (process.platform === "darwin") {
+    try {
+      const status = JSON.parse(await new Desktop().status());
+      report(true, "desktop helper built");
+      // Permissions belong to the app that starts the process, so this checks the terminal running doctor.
+      report(status.accessibility, status.accessibility ? "Accessibility allowed for this terminal" : "Accessibility not allowed for this terminal: allow the app that runs your agent in System Settings > Privacy & Security > Accessibility");
+    } catch (error) {
+      report(false, `desktop tools unavailable: ${error.message}`);
+    }
+  }
   process.exitCode = healthy ? 0 : 1;
 }
 
 const [command = "help", ...options] = process.argv.slice(2);
 if (command === "install") {
   const extraIds = options.flatMap((option, index) => (option === "--extension-id" ? [options[index + 1]] : []));
-  install(extraIds);
+  await install(extraIds);
 }
 else if (command === "uninstall") uninstall();
 else if (command === "doctor") await doctor();

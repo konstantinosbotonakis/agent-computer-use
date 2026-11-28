@@ -41,10 +41,15 @@ test("the MCP server lists its tools and explains when Chrome is unreachable", a
 
   const { result: listed } = await call("tools/list", {});
   const names = listed.tools.map((tool) => tool.name).sort();
-  assert.deepEqual(names, [
+  const browserTools = [
     "click", "console_messages", "evaluate", "handle_dialog", "hover", "navigate", "network_requests", "press_key",
     "screenshot", "scroll", "select_option", "snapshot", "tab_claim", "tab_close", "tab_open", "tabs_list", "type", "wait_for",
-  ]);
+  ];
+  const desktopTools = [
+    "desktop_action", "desktop_apps", "desktop_focus", "desktop_keep_awake", "desktop_menu", "desktop_open", "desktop_press_key",
+    "desktop_screenshot", "desktop_set_value", "desktop_snapshot", "desktop_status", "desktop_type",
+  ];
+  assert.deepEqual(names, [...browserTools, ...(process.platform === "darwin" ? desktopTools : [])].sort());
 
   const { result: called } = await call("tools/call", { name: "tabs_list", arguments: {} });
   assert.equal(called.isError, true);

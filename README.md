@@ -108,12 +108,38 @@ flowchart LR
 
 Snapshots and element lookups run in an isolated script world, so the page's own scripts cannot see or change them.
 
+## Mac apps (macOS)
+
+On macOS the same MCP server also controls native apps through the Accessibility API. Agents read an app's windows as an outline of controls with `[ref=...]` references and act on them by reference, the same way they work with pages. The user's pointer does not move.
+
+| Tool | What it does | Screen locked |
+|---|---|---|
+| `desktop_status` | Reports whether the screen is locked, the Accessibility and Screen Recording permissions, and keep-awake | works |
+| `desktop_keep_awake` | Keeps the display and system awake, so the screen does not lock on idle, until turned off or logout | works |
+| `desktop_apps` | Lists running apps with bundle id, process id and window titles | works |
+| `desktop_open` | Opens an app, file or URL in the background | expected to work, not yet tested locked |
+| `desktop_focus` | Brings an app to the front, for commands that act on the current selection | expected to work, not yet tested locked |
+| `desktop_snapshot` | Returns an app's windows, and optionally its menu bar, as an outline with references | works |
+| `desktop_action` | Presses a button or performs another accessibility action, such as ShowMenu or Increment | expected to work, not yet tested locked |
+| `desktop_set_value` | Replaces the value of a text field or other editable element | expected to work, not yet tested locked |
+| `desktop_menu` | Chooses a menu bar command by its titles, for example `["File", "New Window"]` | expected to work, not yet tested locked |
+| `desktop_press_key` | Presses a key or shortcut; Cmd shortcuts run through the menu item that owns them | Cmd shortcuts expected to work, not yet tested locked |
+| `desktop_type` | Types text into the app's focused element | no |
+| `desktop_screenshot` | Captures an app's front window or the whole screen | no |
+
+macOS keeps apps running behind the lock screen and answers Accessibility reads, but it does not deliver keyboard input and screen captures only show the lock screen. Actions and value changes use the same Accessibility calls as reads, but have not been tested on a locked screen yet. Turn on `desktop_keep_awake` before you leave the Mac so the screen does not lock in the first place.
+
+The tools run a small Swift helper, `src/desktop-helper.swift`, which `install` or the first desktop tool call compiles into `~/.agent-computer-use/desktop`. Compiling needs the Xcode Command Line Tools (`xcode-select --install`).
+
+macOS grants Accessibility and Screen Recording to the app that starts the agent (Codex, Claude, T3 Code, Terminal and so on), and the helper inherits them. If `desktop_status` reports `accessibility: false`, allow that app in System Settings > Privacy & Security > Accessibility, and for screenshots under Screen Recording, then restart it.
+
 ## Security
 
 - Only this extension can start the native host: its manifest lists the extension's ID in `allowed_origins`.
 - The socket lives in `~/.agent-computer-use` with mode `600`, so only processes running as your user can connect. Any such process can use the tools, which is the same trust level as your user account.
 - An agent can only send commands to tabs it opened or claimed. `tab_claim` accepts any tab id, so tell your agents to claim a tab only when you ask.
 - Agents can read and change everything in the tabs they control, including signed-in sessions. Keep that in mind before you point an agent at an account.
+- On macOS, agents can read and operate every app the user can, through the permissions of the app that runs them.
 - The extension's popup lists the tabs agents control and has a button to release them all.
 
 ![Chrome shows when an agent is working, and the popup releases agent tabs](store/images/screenshot-3-control.png)
@@ -127,6 +153,8 @@ Nothing is sent to the developer or any server. The extension passes page conten
 - Snapshots cover the main page and same-origin iframes. Cross-origin iframes are listed but not expanded.
 - Chrome does not let extensions debug `chrome://` pages, the Chrome Web Store or other extensions' pages.
 - Chrome slows timers and animations in background tabs.
+- Mac apps built without accessibility support, such as some games and canvas-drawn apps, show few or no controls in `desktop_snapshot`.
+- Menu commands and shortcuts that act on the current selection only work in the front app. Call `desktop_focus` first.
 - Windows is not supported yet, because native host registration there needs the registry.
 
 ## Uninstall
