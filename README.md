@@ -117,17 +117,17 @@ On macOS the same MCP server also controls native apps through the Accessibility
 | `desktop_status` | Reports whether the screen is locked, the Accessibility and Screen Recording permissions, and keep-awake | works |
 | `desktop_keep_awake` | Keeps the display and system awake, so the screen does not lock on idle, until turned off or logout | works |
 | `desktop_apps` | Lists running apps with bundle id, process id and window titles | works |
-| `desktop_open` | Opens an app, file or URL in the background | works |
-| `desktop_focus` | Brings an app to the front, for commands that act on the current selection | works |
+| `desktop_open` | Opens an app, file or URL in the background | expected to work, not yet tested locked |
+| `desktop_focus` | Brings an app to the front, for commands that act on the current selection | expected to work, not yet tested locked |
 | `desktop_snapshot` | Returns an app's windows, and optionally its menu bar, as an outline with references | works |
-| `desktop_action` | Presses a button or performs another accessibility action, such as ShowMenu or Increment | works |
-| `desktop_set_value` | Replaces the value of a text field or other editable element | works |
-| `desktop_menu` | Chooses a menu bar command by its titles, for example `["File", "New Window"]` | works |
-| `desktop_press_key` | Presses a key or shortcut; Cmd shortcuts run through the menu item that owns them | shortcuts only |
+| `desktop_action` | Presses a button or performs another accessibility action, such as ShowMenu or Increment | expected to work, not yet tested locked |
+| `desktop_set_value` | Replaces the value of a text field or other editable element | expected to work, not yet tested locked |
+| `desktop_menu` | Chooses a menu bar command by its titles, for example `["File", "New Window"]` | expected to work, not yet tested locked |
+| `desktop_press_key` | Presses a key or shortcut; Cmd shortcuts run through the menu item that owns them | Cmd shortcuts expected to work, not yet tested locked |
 | `desktop_type` | Types text into the app's focused element | no |
 | `desktop_screenshot` | Captures an app's front window or the whole screen | no |
 
-macOS keeps apps running behind the lock screen and answers Accessibility requests, but it does not deliver keyboard input and screen captures only show the lock screen. Turn on `desktop_keep_awake` before you leave the Mac so the screen does not lock in the first place.
+macOS keeps apps running behind the lock screen and answers Accessibility reads, but it does not deliver keyboard input and screen captures only show the lock screen. Actions and value changes use the same Accessibility calls as reads, but have not been tested on a locked screen yet. Turn on `desktop_keep_awake` before you leave the Mac so the screen does not lock in the first place.
 
 The tools run a small Swift helper, `src/desktop-helper.swift`, which `install` or the first desktop tool call compiles into `~/.agent-computer-use/desktop`. Compiling needs the Xcode Command Line Tools (`xcode-select --install`).
 
