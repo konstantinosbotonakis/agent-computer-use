@@ -1,7 +1,7 @@
 {
   "name": "@csltd/agent-computer-use",
-  "version": "0.2.0",
-  "description": "Let local coding agents use your real Chrome in background tab groups, through a Chrome extension instead of remote debugging.",
+  "version": "0.2.1",
+  "description": "Let local coding agents use your real Chrome and Mac apps in the background, through a Chrome extension and the macOS Accessibility API.",
   "type": "module",
   "license": "MIT",
   "author": "Custom Services Limited",
