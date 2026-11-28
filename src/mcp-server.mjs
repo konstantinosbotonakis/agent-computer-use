@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { BrokerClient } from "./broker-client.mjs";
 import { Browser } from "./browser.mjs";
+import { Desktop } from "./desktop.mjs";
 
 const { version } = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const DEFAULT_GROUP = process.env.AGENT_COMPUTER_USE_GROUP ?? "🤖 Agent task";
@@ -194,5 +195,105 @@ export async function startMcpServer() {
     ({ tabId, accept, promptText }) => browser.handleDialog(tabId, { accept, promptText }),
   );
 
+  if (process.platform === "darwin") registerDesktopTools(tool);
+
   await server.connect(new StdioServerTransport());
+}
+
+// macOS apps, through the Accessibility API. Reading, actions, menus and set_value keep working
+// while the screen is locked; typing, keys and screenshots need it unlocked.
+function registerDesktopTools(tool) {
+  const desktop = new Desktop();
+  const app = z.string().describe('App name, bundle id or process id, for example "Finder", "com.apple.TextEdit" or "4123".');
+  const desktopRef = z.string().describe('Element reference from the latest desktop_snapshot, for example "w0.3.1" or "m.2.0".');
+
+  tool(
+    "desktop_status",
+    "Report whether the Mac's screen is locked, whether the agent has Accessibility and Screen Recording access, and whether keep-awake is on. Read-only.",
+    {},
+    () => desktop.status(),
+  );
+
+  tool(
+    "desktop_keep_awake",
+    "Turn keep-awake on or off. While on, the display and system do not sleep, so the screen does not lock on idle while the user is away. It lasts until turned off or the user logs out.",
+    { on: z.boolean() },
+    ({ on }) => desktop.keepAwake({ on }),
+  );
+
+  tool(
+    "desktop_apps",
+    "List the running Mac apps with name, bundle id, process id, whether each is in front or hidden, and their window titles. Read-only.",
+    {},
+    () => desktop.apps(),
+  );
+
+  tool(
+    "desktop_open",
+    "Open a Mac app, a file or a URL in the background, so the user's front app keeps focus. Give app, url or both (url can be a file path).",
+    { app: app.optional(), url: z.string().optional().describe("URL or file path to open, in app when given.") },
+    ({ app, url }) => {
+      if (!app && !url) throw new Error("Give app, url or both.");
+      return desktop.open({ app, url });
+    },
+  );
+
+  tool(
+    "desktop_focus",
+    "Bring a Mac app to the front. Shortcuts and menu commands that act on the current selection, such as Cmd+A or Copy, only work in the front app. This changes the app the user sees, so use it only when needed.",
+    { app },
+    ({ app }) => desktop.focus({ app }),
+  );
+
+  tool(
+    "desktop_snapshot",
+    "Read a Mac app's windows as an outline of controls with their labels, values and actions. Each element carries a [ref=...] reference for desktop_action and desktop_set_value. Take a new snapshot after the app changes. Works while the screen is locked.",
+    { app, menus: z.boolean().optional().describe("Also list the menu bar. desktop_menu is usually simpler.") },
+    ({ app, menus }) => desktop.snapshot({ app, menus }),
+  );
+
+  tool(
+    "desktop_action",
+    'Perform an accessibility action on an element from the latest desktop_snapshot, for example "Press" (the default), "ShowMenu", "Increment", "Decrement", "Confirm" or "Raise". The user\'s pointer does not move. Works while the screen is locked.',
+    { app, ref: desktopRef, action: z.string().optional() },
+    ({ app, ref, action }) => desktop.action({ app, ref, action }),
+  );
+
+  tool(
+    "desktop_set_value",
+    "Replace the value of a text field or other editable element from the latest desktop_snapshot. Works while the screen is locked.",
+    { app, ref: desktopRef, value: z.string() },
+    ({ app, ref, value }) => desktop.setValue({ app, ref, value }),
+  );
+
+  tool(
+    "desktop_menu",
+    'Choose a menu bar command by its titles, for example ["File", "New Window"] or ["Format", "Font", "Bold"]. The menu does not open on screen. Works while the screen is locked.',
+    { app, path: z.array(z.string()).min(1) },
+    ({ app, path }) => desktop.menu({ app, path }),
+  );
+
+  tool(
+    "desktop_type",
+    "Type text into the focused element of a Mac app. The keystrokes go to that app only, so it does not need to be in front. Needs the screen unlocked; use desktop_set_value when it is locked.",
+    { app, text: z.string() },
+    ({ app, text }) => desktop.type({ app, text }),
+  );
+
+  tool(
+    "desktop_press_key",
+    'Press a key or shortcut in a Mac app, for example "Enter", "Escape", "Tab", "ArrowDown", "F5" or "Cmd+S". Goes to that app only. Needs the screen unlocked; use desktop_menu or desktop_action when it is locked.',
+    { app, key: z.string() },
+    ({ app, key }) => desktop.pressKey({ app, key }),
+  );
+
+  tool(
+    "desktop_screenshot",
+    "Capture the front window of a Mac app, or the whole screen when no app is given, as a PNG. Needs the screen unlocked.",
+    { app: app.optional() },
+    async ({ app }) => {
+      const { data, mimeType } = await desktop.screenshot({ app });
+      return { content: [{ type: "image", data, mimeType }] };
+    },
+  );
 }
