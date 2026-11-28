@@ -1,0 +1,42 @@
+name: Publish to npm
+
+# Publishing a GitHub release publishes the same version to npm. npm trusts this workflow
+# through OpenID Connect (trusted publishing), so no npm token is stored in the repository
+# and no security-key prompt is needed per release.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    # macOS, so the tests also build the desktop helper with swiftc.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install --global npm@latest
+
+      # doctor reports a problem when the package and extension versions differ.
+      - name: Check that the tag, package and extension versions match
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          package=$(node -p "require('./package.json').version")
+          extension=$(node -p "require('./extension/manifest.json').version")
+          echo "tag $tag, package $package, extension $extension"
+          if [ "$tag" != "$package" ] || [ "$tag" != "$extension" ]; then
+            echo "::error::Set package.json and extension/manifest.json to $tag before releasing."
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm test
+      - run: npm publish --access public
