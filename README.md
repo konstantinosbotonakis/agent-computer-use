@@ -178,6 +178,7 @@ node bin/agent-computer-use.mjs install
 Running `install` from a checkout prints MCP settings that point at the checkout. While developing, load the extension unpacked from the repository's `extension` folder so a reload picks up your changes.
 
 - `npm run package:store` builds the Chrome Web Store upload in `dist/`.
+- To release, set the same version in `package.json`, `package-lock.json` and `extension/manifest.json` (`npm version <x.y.z> --no-git-tag-version` updates the first two), push to `main`, then publish a GitHub release tagged `v<x.y.z>`. The [publish workflow](.github/workflows/publish.yml) checks the versions, runs the tests on macOS and publishes to npm through trusted publishing.
 - `node scripts/render-store-images.mjs` renders the store screenshots and promo tile in `store/images` from the HTML in `store/`.
 - [docs/chrome-web-store.md](docs/chrome-web-store.md) has the listing text, permission justifications and data disclosures.
 
