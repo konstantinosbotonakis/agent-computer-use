@@ -1,6 +1,6 @@
 {
   "name": "@csltd/agent-computer-use",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Let local coding agents use your real Chrome in background tab groups, through a Chrome extension instead of remote debugging.",
   "type": "module",
   "license": "MIT",
